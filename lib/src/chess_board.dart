@@ -22,7 +22,7 @@ class ChessBoard extends StatefulWidget {
 
   /// The color type of the board
   final BoardColor boardColor;
-
+  final String whiteboardColor;
   final PlayerColor boardOrientation;
 
   final VoidCallback? onMove;
@@ -33,6 +33,7 @@ class ChessBoard extends StatefulWidget {
     Key? key,
     required this.controller,
     this.size,
+    this.whiteboardColor = '',
     this.enableUserMoves = true,
     this.boardColor = BoardColor.brown,
     this.boardOrientation = PlayerColor.white,
@@ -80,6 +81,7 @@ class _ChessBoardState extends State<ChessBoard> {
                     var piece = BoardPiece(
                       squareName: squareName,
                       game: game,
+                      whiteboardcolor: widget.whiteboardColor,
                     );
 
                     var draggable = game.get(squareName) != null
@@ -237,12 +239,13 @@ class _ChessBoardState extends State<ChessBoard> {
 class BoardPiece extends StatelessWidget {
   final String squareName;
   final Chess game;
-
-  const BoardPiece({
-    Key? key,
-    required this.squareName,
-    required this.game,
-  }) : super(key: key);
+  final String whiteboardcolor;
+  const BoardPiece(
+      {Key? key,
+      required this.squareName,
+      required this.game,
+      required this.whiteboardcolor})
+      : super(key: key);
   Future<String> getStringValuesSF() async {
     //get user name
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -266,13 +269,13 @@ class BoardPiece extends StatelessWidget {
 
     String piece = (square?.color == Color.WHITE ? 'W' : 'B') +
         (square?.type.toUpperCase() ?? 'P');
-    String colorhexcode = getStringValuesSF() as String;
-    print(colorhexcode);
+    // String colorhexcode = getStringValuesSF() as String;
+    // print(colorhexcode);
 
     switch (piece) {
       case "WP":
         imageToDisplay = WhitePawn(
-          fillColor: HexColor(colorhexcode),
+          fillColor: HexColor(whiteboardcolor),
         );
         break;
       case "WR":
