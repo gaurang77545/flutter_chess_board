@@ -7,7 +7,6 @@ import 'package:flutter_hex_color/flutter_hex_color.dart';
 import 'board_arrow.dart';
 import 'chess_board_controller.dart';
 import 'constants.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ChessBoard extends StatefulWidget {
   /// An instance of [ChessBoardController] which holds the game and allows
@@ -22,7 +21,8 @@ class ChessBoard extends StatefulWidget {
 
   /// The color type of the board
   final BoardColor boardColor;
-  final String whiteboardColor;
+  final String whitepieceColor;
+  final String blackpieceColor;
   final PlayerColor boardOrientation;
 
   final VoidCallback? onMove;
@@ -33,7 +33,8 @@ class ChessBoard extends StatefulWidget {
     Key? key,
     required this.controller,
     this.size,
-    this.whiteboardColor = '',
+    this.whitepieceColor = '',
+    this.blackpieceColor = '',
     this.enableUserMoves = true,
     this.boardColor = BoardColor.brown,
     this.boardOrientation = PlayerColor.white,
@@ -81,7 +82,8 @@ class _ChessBoardState extends State<ChessBoard> {
                     var piece = BoardPiece(
                       squareName: squareName,
                       game: game,
-                      whiteboardcolor: widget.whiteboardColor,
+                      whitepiececolor: widget.whitepieceColor,
+                      blackpiececolor: widget.blackpieceColor,
                     );
 
                     var draggable = game.get(squareName) != null
@@ -239,24 +241,15 @@ class _ChessBoardState extends State<ChessBoard> {
 class BoardPiece extends StatelessWidget {
   final String squareName;
   final Chess game;
-  final String whiteboardcolor;
+  final String whitepiececolor;
+  final String blackpiececolor;
   const BoardPiece(
       {Key? key,
       required this.squareName,
       required this.game,
-      required this.whiteboardcolor})
+      required this.whitepiececolor,
+      required this.blackpiececolor})
       : super(key: key);
-  Future<String> getStringValuesSF() async {
-    //get user name
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    //Return String
-    String stringValue = '#FFFFFF';
-    if (prefs.containsKey('name')) {
-      stringValue = prefs.getString('whitecolor')!;
-    }
-
-    return stringValue;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -269,50 +262,48 @@ class BoardPiece extends StatelessWidget {
 
     String piece = (square?.color == Color.WHITE ? 'W' : 'B') +
         (square?.type.toUpperCase() ?? 'P');
-    // String colorhexcode = getStringValuesSF() as String;
-    // print(colorhexcode);
 
     switch (piece) {
       case "WP":
         imageToDisplay = WhitePawn(
-          fillColor: HexColor(whiteboardcolor),
+          fillColor: HexColor(whitepiececolor),
         );
         break;
       case "WR":
-        imageToDisplay = WhiteRook();
+        imageToDisplay = WhiteRook(fillColor: HexColor(whitepiececolor));
         break;
       case "WN":
-        imageToDisplay = WhiteKnight();
+        imageToDisplay = WhiteKnight(fillColor: HexColor(whitepiececolor));
         break;
       case "WB":
-        imageToDisplay = WhiteBishop();
+        imageToDisplay = WhiteBishop(fillColor: HexColor(whitepiececolor));
         break;
       case "WQ":
-        imageToDisplay = WhiteQueen();
+        imageToDisplay = WhiteQueen(fillColor: HexColor(whitepiececolor));
         break;
       case "WK":
-        imageToDisplay = WhiteKing();
+        imageToDisplay = WhiteKing(fillColor: HexColor(whitepiececolor));
         break;
       case "BP":
-        imageToDisplay = BlackPawn();
+        imageToDisplay = BlackPawn(fillColor: HexColor(blackpiececolor));
         break;
       case "BR":
-        imageToDisplay = BlackRook();
+        imageToDisplay = BlackRook(fillColor: HexColor(blackpiececolor));
         break;
       case "BN":
-        imageToDisplay = BlackKnight();
+        imageToDisplay = BlackKnight(fillColor: HexColor(blackpiececolor));
         break;
       case "BB":
-        imageToDisplay = BlackBishop();
+        imageToDisplay = BlackBishop(fillColor: HexColor(blackpiececolor));
         break;
       case "BQ":
-        imageToDisplay = BlackQueen();
+        imageToDisplay = BlackQueen(fillColor: HexColor(blackpiececolor));
         break;
       case "BK":
-        imageToDisplay = BlackKing();
+        imageToDisplay = BlackKing(fillColor: HexColor(blackpiececolor));
         break;
       default:
-        imageToDisplay = WhitePawn();
+        imageToDisplay = WhitePawn(fillColor: HexColor(whitepiececolor));
     }
 
     return imageToDisplay;
