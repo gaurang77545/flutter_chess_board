@@ -3,9 +3,11 @@ import 'dart:math';
 import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:chess/chess.dart' hide State;
+import 'package:flutter_hex_color/flutter_hex_color.dart';
 import 'board_arrow.dart';
 import 'chess_board_controller.dart';
 import 'constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ChessBoard extends StatefulWidget {
   /// An instance of [ChessBoardController] which holds the game and allows
@@ -241,6 +243,17 @@ class BoardPiece extends StatelessWidget {
     required this.squareName,
     required this.game,
   }) : super(key: key);
+  Future<String> getStringValuesSF() async {
+    //get user name
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    //Return String
+    String stringValue = '#FFFFFF';
+    if (prefs.containsKey('name')) {
+      stringValue = prefs.getString('whitecolor')!;
+    }
+
+    return stringValue;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -253,10 +266,14 @@ class BoardPiece extends StatelessWidget {
 
     String piece = (square?.color == Color.WHITE ? 'W' : 'B') +
         (square?.type.toUpperCase() ?? 'P');
+    String colorhexcode = getStringValuesSF() as String;
+    print(colorhexcode);
 
     switch (piece) {
       case "WP":
-        imageToDisplay = WhitePawn();
+        imageToDisplay = WhitePawn(
+          fillColor: HexColor(colorhexcode),
+        );
         break;
       case "WR":
         imageToDisplay = WhiteRook();
