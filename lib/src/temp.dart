@@ -3,10 +3,10 @@ import 'dart:math';
 import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:chess/chess.dart' hide State;
+import 'package:flutter_hex_color/flutter_hex_color.dart';
 import 'board_arrow.dart';
 import 'chess_board_controller.dart';
 import 'constants.dart';
-import 'package:flutter_hex_color/flutter_hex_color.dart';
 
 class ChessBoard extends StatefulWidget {
   /// An instance of [ChessBoardController] which holds the game and allows
@@ -23,33 +23,30 @@ class ChessBoard extends StatefulWidget {
   final BoardColor boardColor;
   final String whitepieceColor;
   final String blackpieceColor;
-
   final PlayerColor boardOrientation;
 
   final VoidCallback? onMove;
 
   final List<BoardArrow> arrows;
 
-  const ChessBoard(
-      {Key? key,
-      required this.controller,
-      this.size,
-      this.whitepieceColor = '',
-      this.blackpieceColor = '',
-      this.enableUserMoves = true,
-      this.boardColor = BoardColor.brown,
-      this.boardOrientation = PlayerColor.white,
-      this.onMove,
-      this.arrows = const []})
-      : super(key: key);
+  const ChessBoard({
+    Key? key,
+    required this.controller,
+    this.size,
+    this.whitepieceColor = '',
+    this.blackpieceColor = '',
+    this.enableUserMoves = true,
+    this.boardColor = BoardColor.brown,
+    this.boardOrientation = PlayerColor.white,
+    this.onMove,
+    this.arrows = const [],
+  }) : super(key: key);
 
   @override
   State<ChessBoard> createState() => _ChessBoardState();
 }
 
 class _ChessBoardState extends State<ChessBoard> {
-  bool? availableMovesCanBeShowed = false;
-  PieceMoveData? selectedPieceMoveData;
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<Chess>(
@@ -136,14 +133,11 @@ class _ChessBoardState extends State<ChessBoard> {
                           to: squareName,
                         );
                       }
-
                       if (game.turn != moveColor) {
                         widget.onMove?.call();
-                      } else {
-                        availableMovesCanBeShowed = true;
                       }
-                      selectedPieceMoveData = pieceMoveData;
                     });
+
                     return dragTarget;
                   },
                   itemCount: 64,
@@ -162,19 +156,6 @@ class _ChessBoardState extends State<ChessBoard> {
                     ),
                   ),
                 ),
-              if (availableMovesCanBeShowed == true)
-                IgnorePointer(
-                    child: AspectRatio(
-                  aspectRatio: 1.0,
-                  child: CustomPaint(
-                    child: Container(),
-                    painter: _AvailableMovesPainter(
-                      widget.controller.getPossibleMoves(),
-                      widget.boardOrientation,
-                      selectedPieceMoveData,
-                    ),
-                  ),
-                ))
             ],
           ),
         );
@@ -434,58 +415,5 @@ class _ArrowPainter extends CustomPainter {
   @override
   bool shouldRepaint(_ArrowPainter oldDelegate) {
     return arrows != oldDelegate.arrows;
-  }
-}
-
-class _AvailableMovesPainter extends CustomPainter {
-  List<Move> availableMoves;
-  PlayerColor boardOrientation;
-  PieceMoveData? selectedPiece;
-
-  _AvailableMovesPainter(
-    this.availableMoves,
-    this.boardOrientation,
-    this.selectedPiece,
-  );
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    var blockSize = size.width / 8;
-    var halfBlockSize = size.width / 16;
-
-    List<Move> availableMoveList = availableMoves.where((element) {
-      return element.fromAlgebraic == selectedPiece?.squareName;
-    }).toList();
-
-    for (var move in availableMoveList) {
-      var startFile = files.indexOf(move.toAlgebraic[0]);
-      var startRank = int.parse(move.toAlgebraic[1]) - 1;
-
-      int effectiveRowStart = 0;
-      int effectiveColumnStart = 0;
-
-      if (boardOrientation == PlayerColor.black) {
-        effectiveColumnStart = 7 - startFile;
-        effectiveRowStart = startRank;
-      } else {
-        effectiveColumnStart = startFile;
-        effectiveRowStart = 7 - startRank;
-      }
-
-      var offset = Offset(
-          ((effectiveColumnStart + 1) * blockSize) - halfBlockSize,
-          ((effectiveRowStart + 1) * blockSize) - halfBlockSize);
-
-      var paint = Paint()
-        ..strokeWidth = halfBlockSize * 0.8
-        ..color = Colors.redAccent;
-
-      canvas.drawCircle(offset, 5.0, paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(_AvailableMovesPainter oldDelegate) {
-    return availableMoves != oldDelegate.availableMoves;
   }
 }
