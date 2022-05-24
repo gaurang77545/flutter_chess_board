@@ -140,7 +140,9 @@ class _ChessBoardState extends State<ChessBoard> {
                       if (game.turn != moveColor) {
                         widget.onMove?.call();
                       } else {
-                        availableMovesCanBeShowed = true;
+                        setState(() {
+                          availableMovesCanBeShowed = true;
+                        });
                       }
                       selectedPieceMoveData = pieceMoveData;
                     });
@@ -168,6 +170,7 @@ class _ChessBoardState extends State<ChessBoard> {
                   aspectRatio: 1.0,
                   child: CustomPaint(
                     child: Container(),
+                    //willChange: true,
                     painter: _AvailableMovesPainter(
                       widget.controller.getPossibleMoves(),
                       widget.boardOrientation,
